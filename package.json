@@ -9,8 +9,10 @@
   "author": "Manish Edida",
   "license": "ISC",
   "dependencies": {
+    "@hapi/joi": "^17.1.1",
     "ejs": "^3.1.8",
-    "express": "^4.18.1"
+    "express": "^4.18.1",
+    "mongoose": "^6.4.2"
   },
   "devDependencies": {
     "dotenv": "^16.0.1",
