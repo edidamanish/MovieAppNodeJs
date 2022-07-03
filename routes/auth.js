@@ -28,9 +28,11 @@ router.post('/register', async (req, res) => {
 		})
 
 		const savedUser = await user.save()
-		res.send({ user: savedUser._id })
+		const token = jwt.sign({ _id: savedUser._id }, process.env.TOKEN_SECRET)
+
+		return res.send({ username: user.username, authToken: token })
 	} catch (err) {
-		res.status(400).send(err)
+		return res.status(400).send(err)
 	}
 })
 
@@ -47,9 +49,9 @@ router.post('/login', async (req, res) => {
 			return res.status(400).send('Username or password is wrong')
 
 		const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET)
-		return res.header('auth-token', token).send(token)
+		return res.send({ username: user.username, authToken: token })
 	} catch (err) {
-		res.status(400).send(err)
+		return res.status(400).send(err)
 	}
 })
 
