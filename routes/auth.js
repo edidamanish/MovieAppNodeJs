@@ -9,37 +9,16 @@ const {
 } = require('../errors/auth-error-codes')
 const { GENERIC_ERROR_MESSAGE } = require('../errors/gen-errors-messages')
 const { GENERIC_ERROR_CODE } = require('../errors/gen-error-codes')
+const {
+	handleValidationError
+} = require('../error-handling/auth-error-handling')
 
 const { registerValidation, loginValidation } = require('../validation')
 
 router.post('/register', async (req, res) => {
 	const { error } = registerValidation(req.body)
-	if (error && error?.details[0]?.context?.key) {
-		const errorData = {
-			message: error.details[0].message
-		}
-		switch (error.details[0].context.key) {
-			case 'username':
-				return res.status(400).send({
-					...errorData,
-					code: USERNAME_ERROR
-				})
-			case 'email':
-				return res.status(400).send({
-					...errorData,
-					code: EMAIL_ERROR
-				})
-			case 'password':
-				return res.status(400).send({
-					...errorData,
-					code: PASSWORD_ERROR
-				})
-			default:
-				return res.status(400).send({
-					...errorData,
-					code: GENERIC_ERROR_CODE
-				})
-		}
+	if (error) {
+		return handleValidationError(error, res)
 	}
 
 	try {
@@ -82,7 +61,9 @@ router.post('/register', async (req, res) => {
 
 router.post('/login', async (req, res) => {
 	const { error } = loginValidation(req.body)
-	if (error) return res.status(400).send(error)
+	if (error) {
+		return handleValidationError(error, res)
+	}
 
 	try {
 		const user = await User.findOne({ username: req.body.username })
